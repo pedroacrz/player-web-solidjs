@@ -1,26 +1,33 @@
-import { createSignal, onCleanup } from 'solid-js';
-import type { PlayerProps } from './Player.interface';
-import PlayPause from './PlayPause';
-import ProgressBar from './ProgressBar';
-import VolumeControl from './VolumeControl';
+import { createSignal, onCleanup, createEffect } from "solid-js";
+import type { PlayerProps } from "./Player.interface";
+import PlayPause from "./PlayPause";
+import ProgressBar from "./ProgressBar";
+import VolumeControl from "./VolumeControl";
 import {
   playerContainerStyle,
   titleStyle,
   artistStyle,
   controlsStyle,
   progressBarContainerStyle,
-  progressBarStyle
-} from './Player.styles';
+  progressBarStyle,
+} from "./Player.styles";
 
 export default function Player(props: PlayerProps) {
   let audioRef: HTMLAudioElement | undefined;
+  let playRef: HTMLButtonElement | undefined;
 
   const [isPlaying, setIsPlaying] = createSignal(false);
   const [currentTime, setCurrentTime] = createSignal(0);
   const [duration, setDuration] = createSignal(0);
   const [volume, setVolume] = createSignal(1);
 
+  createEffect(() => {
+    console.log(`rodei`);
+    if (playRef) console.log(playRef);
+  });
+
   const togglePlay = () => {
+    console.log(playRef);
     if (!audioRef) return;
     if (isPlaying()) {
       audioRef.pause();
@@ -62,12 +69,12 @@ export default function Player(props: PlayerProps) {
       <div style={controlsStyle}>
         <h3 style={titleStyle}>{props.title}</h3>
         <p style={artistStyle}>{props.artist}</p>
-        <PlayPause isPlaying={isPlaying()} toggle={togglePlay} />
+        <PlayPause ref={playRef} isPlaying={isPlaying()} toggle={togglePlay} />
         <div style={progressBarContainerStyle}>
           <div
             style={{
               ...progressBarStyle,
-              width: `${(currentTime() / duration()) * 100 || 0}%`
+              width: `${(currentTime() / duration()) * 100 || 0}%`,
             }}
           />
         </div>
